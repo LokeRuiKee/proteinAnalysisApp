@@ -1,3 +1,5 @@
+# URL link to the app: https://proteinanalysisgroup12.streamlit.app/
+
 import io
 import streamlit as st
 import requests
