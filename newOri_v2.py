@@ -34,7 +34,6 @@ def fetch_protein_data(uniprot_id):
 
 
 # Function to fetch protein-protein interaction network from STRING DB
-# Function to fetch protein-protein interaction network from STRING DB
 def fetch_ppi_network(uniprot_id):
     url = f"https://string-db.org/api/json/interaction_partners?identifiers={uniprot_id}"
     try:
@@ -72,47 +71,22 @@ def visualize_ppi_network(data):
 
 # Function to perform sequence alignment
 def perform_sequence_alignment(protein_sequence):
-    # URL for the Clustal Omega REST API
-    url = "https://www.ebi.ac.uk/Tools/services/rest/clustalo/run"
+    # Write the protein sequence to a temporary FASTA file
+    with open("temp.fasta", "w") as f:
+        f.write(">query\n")
+        f.write(protein_sequence)
 
-    # Parameters for the API request
-    params = {
-        "sequence": protein_sequence,
-        # "email": "your-email@example.com",  # Replace with your email
-    }
+    # Perform sequence alignment using Clustal Omega
+    cline = ClustalOmegaCommandline(infile="temp.fasta", outfile="alignment.fasta", verbose=True, auto=True)
+    stdout, stderr = cline()
 
-    # Send a POST request to the API
-    response = requests.post(url, data=params)
-    if not response.ok:
-        print(f"Failed to start alignment. HTTP status code: {response.status_code}")
-        print(f"Response text: {response.text}")
-        return None
-
-    # Get the job ID from the response
-    job_id = response.text
-
-    # URL to get the status of the job
-    status_url = f"https://www.ebi.ac.uk/Tools/services/rest/clustalo/status/{job_id}"
-
-    # Wait for the job to finish
-    while True:
-        response = requests.get(status_url)
-        if response.text == "FINISHED":
-            break
-        time.sleep(1)
-
-    # URL to get the results of the job
-    result_url = f"https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/{job_id}/aln-clustal_num"
-
-    # Get the results
-    response = requests.get(result_url)
-    if not response.ok:
-        print(f"Failed to get alignment results. HTTP status code: {response.status_code}")
-        print(f"Response text: {response.text}")
-        return None
-
-    # Return the aligned sequence
-    return response.text
+    # Read the alignment output
+    alignment = []
+    with open("alignment.fasta", "r") as f:
+        for record in SeqIO.parse(f, "fasta"):
+            alignment.append(record.seq)
+    
+    return alignment
 
 def main():
     st.title("Protein Data Analysis")
