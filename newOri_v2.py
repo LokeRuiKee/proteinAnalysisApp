@@ -29,9 +29,11 @@ def fetch_ppi_network(uniprot_id):
     response = requests.get(url)
     if response.ok:
         data = response.json()
-        interaction_partners = [partner["preferredName"] for partner in data[uniprot_id]]
+        interaction_partners = [partner["preferredName"] for partner in data if "preferredName" in partner]
         return interaction_partners
     else:
+        print(f"Failed to fetch PPI network. HTTP status code: {response.status_code}")
+        print(f"Response text: {response.text}")
         return None
 
 # Function to perform sequence alignment
