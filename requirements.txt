@@ -1,6 +1,5 @@
 matplotlib
 biopython
 requests
-muscle3
 networkx
 pandas
