@@ -4,12 +4,11 @@ import io
 import streamlit as st
 import requests
 from Bio import SeqIO, SeqUtils
-from Bio.Align.Applications import ClustalOmegaCommandline
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
-import time
-import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
+from Bio import pairwise2
+from Bio.pairwise2 import format_alignment
 
 # KD dictionary
 KD = {"A": 1.8, "R": -4.5, "N": -3.5, "D": -3.5, "C": 2.5,
@@ -72,30 +71,23 @@ def visualize_ppi_network(data):
     st.pyplot(fig)
 
 # Function to perform sequence alignment
-def perform_sequence_alignment(protein_sequence):
-    # Write the protein sequence to a temporary FASTA file
-    with open("temp.fasta", "w") as f:
-        f.write(">query\n")
-        f.write(protein_sequence)
+def perform_sequence_alignment(seq1, seq2):
+    # Perform global alignment
+    alignments = pairwise2.align.globalxx(seq1, seq2)
 
-    # Perform sequence alignment using Clustal Omega
-    cline = ClustalOmegaCommandline(infile="temp.fasta", outfile="alignment.fasta", verbose=True, auto=True)
-    stdout, stderr = cline()
+    # Store the alignments in a string
+    alignment_str = ""
+    for alignment in alignments:
+        alignment_str += format_alignment(*alignment)
 
-    # Read the alignment output
-    alignment = []
-    with open("alignment.fasta", "r") as f:
-        for record in SeqIO.parse(f, "fasta"):
-            alignment.append(record.seq)
-    
-    return alignment
+    return alignment_str
 
 def main():
     st.title("Protein Data Analysis")
 
     option = st.sidebar.selectbox(
         'Choose Input Type',
-        ('UniProt ID', 'Protein Sequence'))
+        ('UniProt ID', 'Protein Sequence', 'Sequence Alignment Task'))
 
     if option == 'UniProt ID':
         uniprot_id = st.sidebar.text_input('Enter UniProt ID')
@@ -124,10 +116,6 @@ def main():
             st.write(f"Length: {length}")
             st.write(f"Molecular Weight: {molecular_weight}")
 
-            st.write("### Sequence Alignment")
-            alignment_output = perform_sequence_alignment(protein_sequence)
-            st.write(alignment_output)
-
             st.write("### Additional Merits")
             protein_analysis = ProteinAnalysis(protein_sequence)
             isoelectric_point = protein_analysis.isoelectric_point()
@@ -135,5 +123,15 @@ def main():
 
             hydrophobicity = protein_analysis.protein_scale(param_dict=KD, window=9, edge=1.0)[0]
             st.write(f"Hydrophobicity: {hydrophobicity}")
+
+    elif option == 'Sequence Alignment Task':
+        protein_sequence1 = st.sidebar.text_area('Enter First Protein Sequence')
+        protein_sequence2 = st.sidebar.text_area('Enter Second Protein Sequence')
+
+        if st.sidebar.button('Perform Alignment'):
+            if protein_sequence1 and protein_sequence2:
+                st.write("### Sequence Alignment")
+                alignment_output = perform_sequence_alignment(protein_sequence1, protein_sequence2)
+                st.write(alignment_output)
 
 main()
