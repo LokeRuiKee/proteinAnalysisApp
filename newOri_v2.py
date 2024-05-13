@@ -7,6 +7,7 @@ from Bio.SeqUtils.ProtParam import ProteinAnalysis
 import time
 import pandas as pd
 import networkx as nx
+import matplotlib.pyplot as plt
 
 # KD dictionary
 KD = {"A": 1.8, "R": -4.5, "N": -3.5, "D": -3.5, "C": 2.5,
@@ -33,30 +34,41 @@ def fetch_protein_data(uniprot_id):
 
 
 # Function to fetch protein-protein interaction network from STRING DB
+# Function to fetch protein-protein interaction network from STRING DB
 def fetch_ppi_network(uniprot_id):
-    # Define the base URL for the STRING DB API
-    string_url = "https://string-db.org/api/json/network"       
-    # Define the method and parameters for the API request
-    method = 'get_string_ids'
-    params = {
-        'identifiers': uniprot_id,
-        'species': 9606,  # Species: Homo sapiens
-    }
-    
-    # Make the API request
-    response = requests.get(string_url, params=params)
-    network  = response.json()
+    url = f"https://string-db.org/api/json/interaction_partners?identifiers={uniprot_id}"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for 4xx and 5xx status codes
+        data = response.json()
 
-    network_df = pd.json_normalize(network)
+        # Check if data is a list of dictionaries
+        if isinstance(data, list):
+            return data
+        else:
+            raise ValueError("Unexpected data structure")
 
-    network_graph = nx.from_pandas_edgelist(network_df, "preferredName_A", "preferredName_B")
+    except Exception as e:
+        st.error("An unexpected error occurred while fetching protein-protein interaction network:", e)
+        return None
 
-    print('Number of edges:', network_graph.number_of_edges())
-    print('Number of nodes:', network_graph.number_of_nodes())
+# Function to visualize protein-protein interaction network
+def visualize_ppi_network(data):
+    # Create a directed graph
+    G = nx.DiGraph()
 
-    slayout = nx.spring_layout(network_graph, seed=123)
+    # Add nodes and edges to the graph
+    for interaction in data:
+        protein_A = interaction["preferredName_A"]
+        protein_B = interaction["preferredName_B"]
+        G.add_edge(protein_A, protein_B)
 
-    nx.draw(network_graph, slayout, with_labels=True, node_size=1000, node_color='lightblue', font_size=8)
+    # Draw the graph
+    fig, ax = plt.subplots()
+    pos = nx.spring_layout(G)
+    nx.draw(G, pos, with_labels=True, node_color='skyblue', node_size=1500, edge_color='black', linewidths=1, font_size=10)
+    plt.title("Protein-Protein Interaction Network")
+    st.pyplot(fig)
 
 # Function to perform sequence alignment
 def perform_sequence_alignment(protein_sequence):
@@ -102,7 +114,6 @@ def perform_sequence_alignment(protein_sequence):
     # Return the aligned sequence
     return response.text
 
-# Main function to run the Streamlit app
 def main():
     st.title("Protein Data Analysis")
 
@@ -123,7 +134,7 @@ def main():
                 st.write("### Protein-Protein Interaction Network")
                 ppi_network = fetch_ppi_network(uniprot_id)
                 if ppi_network:
-                    st.write(ppi_network)
+                    visualize_ppi_network(ppi_network)
                 else:
                     st.write("Failed to fetch PPI network.")
 
