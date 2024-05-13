@@ -1,0 +1,55 @@
+Protein list name: Transmembrane_proteins
+Dataset protein count: 70
+Average protein length: 145.0
+Average protein molecular weight: 16111.71
+Average protein net charge at pH = 7: 0.9
+Average protein isoelectric point: 7.1
+Average protein hydrophobicity: 13.26
+Average number of positively charged residues: 17.0 and their percentage: 0.12
+Average number of negatively charged residues: 13.0 and their percentage: 0.09
+Average number of hydrophobic residues: 79.0 and their percentage: 0.54
+Average number of hydrophilic residues: 40.0 and their percentage: 0.28
+Average number of aliphatic residues: 65.0 and their percentage: 0.45
+Average number of aromatic residues: 14.0 and their percentage: 0.1
+
+AA	Occurence	Composition
+A	12.257142857142858	8.62
+
+C	3.2857142857142856	2.2
+
+D	5.771428571428571	3.81
+
+E	7.542857142857143	5.04
+
+F	6.914285714285715	4.77
+
+G	10.142857142857142	6.96
+
+H	2.9571428571428573	1.99
+
+I	8.114285714285714	5.81
+
+K	6.728571428571429	4.66
+
+L	16.742857142857144	11.47
+
+M	4.114285714285714	3.02
+
+N	4.371428571428571	3.01
+
+P	7.442857142857143	4.96
+
+Q	5.485714285714286	3.77
+
+R	7.442857142857143	5.09
+
+S	11.128571428571428	7.55
+
+T	7.671428571428572	5.25
+
+V	10.471428571428572	7.34
+
+W	2.657142857142857	1.81
+
+Y	4.171428571428572	2.86
+

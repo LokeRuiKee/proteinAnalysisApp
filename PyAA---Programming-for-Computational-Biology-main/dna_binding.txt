@@ -1,0 +1,55 @@
+Protein list name: DNA-binding_proteins
+Dataset protein count: 60
+Average protein length: 313.0
+Average protein molecular weight: 34264.53
+Average protein net charge at pH = 7: 3.2
+Average protein isoelectric point: 7.6
+Average protein hydrophobicity: -187.13
+Average number of positively charged residues: 44.0 and their percentage: 0.14
+Average number of negatively charged residues: 33.0 and their percentage: 0.11
+Average number of hydrophobic residues: 151.0 and their percentage: 0.48
+Average number of hydrophilic residues: 104.0 and their percentage: 0.33
+Average number of aliphatic residues: 131.0 and their percentage: 0.42
+Average number of aromatic residues: 23.0 and their percentage: 0.07
+
+AA	Occurence	Composition
+A	28.216666666666665	8.98
+
+C	5.383333333333334	1.68
+
+D	13.35	4.27
+
+E	19.7	6.39
+
+F	9.5	3.04
+
+G	23.75	7.5
+
+H	7.8	2.48
+
+I	9.566666666666666	3.03
+
+K	18.55	6.05
+
+L	25.583333333333332	8.16
+
+M	7.066666666666666	2.25
+
+N	10.75	3.46
+
+P	29.033333333333335	9.23
+
+Q	16.35	5.24
+
+R	17.733333333333334	5.68
+
+S	27.416666666666668	8.79
+
+T	14.9	4.76
+
+V	14.433333333333334	4.58
+
+W	3.433333333333333	1.12
+
+Y	10.2	3.3
+
