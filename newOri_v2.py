@@ -8,25 +8,19 @@ from Bio.SeqUtils.ProtParam import ProteinAnalysis
 # Function to fetch protein data from UniProt
 def fetch_protein_data(uniprot_id):
     url = f"https://www.uniprot.org/uniprot/{uniprot_id}.fasta"
+    response = requests.get(url)
+    record = SeqIO.read(io.StringIO('\n'.join(response.text.splitlines())), "fasta")
+
     try:
-        response = requests.get(url)
-        response.raise_for_status()  # Raise an exception for 4xx and 5xx status codes
-        if response.ok:
-            record = SeqIO.read(io.StringIO('\n'.join(response.text.splitlines())), "fasta")
-            return {
-                "sequence": str(record.seq),
-                "length": len(record.seq),
-                "molecular_weight": SeqUtils.molecular_weight(record.seq)
-            }
-        else:
-            st.error("Failed to fetch protein data. Please check the UniProt ID and try again.")
-            return None
-    except requests.exceptions.RequestException as e:
-        st.error("An error occurred while fetching protein data:", e)
-        return None
-    except (ValueError, AttributeError) as e:
-        st.error(f"An error occurred while processing the protein data: {e}")
-        return None
+        molecular_weight = SeqUtils.molecular_weight(record.seq)
+    except ValueError:
+        molecular_weight = SeqUtils.molecular_weight(record.seq, seq_type="protein")
+
+    return {
+        "sequence": str(record.seq),
+        "length": len(record.seq),
+        "molecular_weight": molecular_weight
+    }
 
 
 # Function to fetch protein-protein interaction network from STRING DB
