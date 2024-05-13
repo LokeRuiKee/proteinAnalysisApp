@@ -1,3 +1,4 @@
+import io
 import streamlit as st
 import requests
 from Bio import SeqIO, SeqUtils
@@ -11,7 +12,7 @@ def fetch_protein_data(uniprot_id):
         response = requests.get(url)
         response.raise_for_status()  # Raise an exception for 4xx and 5xx status codes
         if response.ok:
-            record = SeqIO.read(response.text.splitlines(), "fasta")
+            record = SeqIO.read(io.StringIO('\n'.join(response.text.splitlines())), "fasta")
             return {
                 "sequence": str(record.seq),
                 "length": len(record.seq),
@@ -23,8 +24,8 @@ def fetch_protein_data(uniprot_id):
     except requests.exceptions.RequestException as e:
         st.error("An error occurred while fetching protein data:", e)
         return None
-    except (ValueError, SeqIO.SeqRecord, SeqIO.SeqRecord, AttributeError) as e:
-        st.error("An error occurred while processing the protein data:", e)
+    except (ValueError, AttributeError) as e:
+        st.error(f"An error occurred while processing the protein data: {e}")
         return None
 
 
